@@ -75,6 +75,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  graphview:
+    dependency: "direct main"
+    description:
+      name: graphview
+      sha256: bdba183583b23c30c71edea09ad5f0beef612572d3e39e855467a925bd08392f
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   js:
     dependency: transitive
     description:
@@ -186,3 +194,4 @@ packages:
     version: "2.1.4"
 sdks:
   dart: ">=2.19.2 <3.0.0"
+  flutter: ">=1.17.0"
