@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 
 class Edge {
@@ -97,7 +99,7 @@ class _MSTPageState extends State<MSTPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Minimum Spanning Tree'),
+        title: Text('Minimum Spanning Tree Using Prim'),
       ),
       body: Column(
         children: [
