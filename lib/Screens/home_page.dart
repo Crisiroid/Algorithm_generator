@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_new
 import 'package:algorithm_generator/Screens/algorithm_steps.dart';
+import 'package:algorithm_generator/Screens/kruskal_algorithm_steps.dart';
 import 'package:algorithm_generator/Screens/sollin_algorithm_steps.dart';
 import 'package:algorithm_generator/Utils/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,16 @@ class HomePage extends StatelessWidget {
                           },
                           text: "Sollin");
                     }),
-                    CustomButton(onPressed: () {}, text: "kruskal"),
+                    Builder(builder: (context) {
+                      return CustomButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => KruskalMSTScreen()));
+                          },
+                          text: "kruskal");
+                    }),
                   ],
                 ),
               ),
