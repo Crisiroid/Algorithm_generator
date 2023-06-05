@@ -14,14 +14,14 @@ class Graph {
 
   Graph(this.nodes, this.edges);
 
-  List<Edge> sollinMST() {
+  List<Edge> sollinMST(String startNode, String endNode) {
     final List<List<String>> forest =
         List<List<String>>.generate(nodes.length, (index) => [nodes[index]]);
 
     final List<Edge> mst = [];
     final List<Edge> sortedEdges = List<Edge>.from(edges)..sort(_compareEdges);
 
-    while (mst.length < nodes.length - 1) {
+    while (!_isConnected(forest, startNode, endNode)) {
       final List<Edge> safeEdges = [];
 
       for (final edge in sortedEdges) {
@@ -32,7 +32,7 @@ class Graph {
           safeEdges.add(edge);
           _union(forest, sourceRoot, destRoot);
 
-          if (safeEdges.length == nodes.length - 1) {
+          if (_isConnected(forest, startNode, endNode)) {
             break;
           }
         }
@@ -46,6 +46,14 @@ class Graph {
 
   int _compareEdges(Edge a, Edge b) {
     return a.weight.compareTo(b.weight);
+  }
+
+  bool _isConnected(
+      List<List<String>> forest, String startNode, String endNode) {
+    final String startRoot = _findRoot(forest, startNode);
+    final String endRoot = _findRoot(forest, endNode);
+
+    return startRoot != '' && startRoot == endRoot;
   }
 
   String _findRoot(List<List<String>> forest, String node) {
@@ -81,10 +89,10 @@ class Graph {
 
 class SollinMstPage extends StatefulWidget {
   @override
-  _SolinMstPageState createState() => _SolinMstPageState();
+  _SollinMstPageState createState() => _SollinMstPageState();
 }
 
-class _SolinMstPageState extends State<SollinMstPage> {
+class _SollinMstPageState extends State<SollinMstPage> {
   final List<String> nodes = ['S', 'A', 'B', 'C', 'D', 'T'];
   final List<Edge> edges = [
     Edge('S', 'A', 7),
@@ -98,20 +106,39 @@ class _SolinMstPageState extends State<SollinMstPage> {
     Edge('D', 'T', 2),
   ];
   List<Edge> mst = [];
+  List<String> path = [];
 
   @override
   void initState() {
     super.initState();
-    // Calculate the Minimum Spanning Tree
+    // Calculate the Minimum Spanning Tree from S to B
     final graph = Graph(nodes, edges);
-    mst = graph.sollinMST();
+    mst = graph.sollinMST('S', 'B');
+    path = _getPath('S', 'B', mst);
+  }
+
+  List<String> _getPath(String startNode, String endNode, List<Edge> mst) {
+    final List<String> path = [startNode];
+    String currentNode = startNode;
+
+    while (currentNode != endNode) {
+      for (final edge in mst) {
+        if (edge.source == currentNode) {
+          path.add(edge.destination);
+          currentNode = edge.destination;
+          break;
+        }
+      }
+    }
+
+    return path;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Minimum Spanning Tree'),
+        title: const Text('Minimum Spanning Tree (S to B) in Sollin'),
       ),
       body: Column(
         children: [
@@ -146,6 +173,20 @@ class _SolinMstPageState extends State<SollinMstPage> {
                   ),
                 );
               },
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: const Text(
+              'MST Path (S to B):',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              path.join(' -> '),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],

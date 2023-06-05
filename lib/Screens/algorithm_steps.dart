@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:flutter/material.dart';
 
 class Edge {
@@ -12,58 +10,70 @@ class Edge {
 
 class Graph {
   final List<String> nodes;
-  final Map<String, List<Edge>> adjacencyList;
+  final List<Edge> edges;
 
-  Graph(this.nodes) : adjacencyList = {for (var node in nodes) node: []};
+  Graph(this.nodes, this.edges);
 
-  void addEdge(String source, String destination, int weight) {
-    final edge1 = Edge(source, destination, weight);
-    final edge2 = Edge(destination, source, weight);
-    adjacencyList[source]!.add(edge1);
-    adjacencyList[destination]!.add(edge2);
-  }
+  List<Edge> primMST(String startNode, String endNode) {
+    final Map<String, int> keyMap = {};
+    final Map<String, String> parentMap = {};
+    final Set<String> visitedNodes = {};
 
-  List<Edge> primMST() {
-    final List<bool> visited = List<bool>.filled(nodes.length, false);
-    final List<Edge> mst = [];
-    final List<int> key = List<int>.filled(nodes.length, 999999);
-    final List<String> parent = List<String>.filled(nodes.length, '');
+    for (final node in nodes) {
+      keyMap[node] = 999999; // Replace int.maxFinite with a large value
+    }
 
-    key[0] = 0; // Start with the first node
+    keyMap[startNode] = 0;
 
-    for (int count = 0; count < nodes.length - 1; count++) {
-      final u = _minKey(key, visited);
-      visited[u] = true;
+    while (visitedNodes.length != nodes.length) {
+      final String currentNode = _getMinKey(keyMap, visitedNodes);
+      visitedNodes.add(currentNode);
 
-      for (final edge in adjacencyList[nodes[u]]!) {
-        final v = nodes.indexOf(edge.destination);
-
-        if (!visited[v] && edge.weight < key[v]) {
-          parent[v] = nodes[u];
-          key[v] = edge.weight;
+      for (final edge in edges) {
+        if (edge.source == currentNode &&
+            !visitedNodes.contains(edge.destination) &&
+            edge.weight < keyMap[edge.destination]!) {
+          keyMap[edge.destination] = edge.weight;
+          parentMap[edge.destination] = edge.source;
         }
       }
     }
 
-    for (int i = 1; i < nodes.length; i++) {
-      mst.add(Edge(parent[i], nodes[i], key[i]));
+    final List<Edge> mst = [];
+    String node = endNode;
+
+    while (node != startNode) {
+      final String parent = parentMap[node]!;
+      final int weight = _findEdgeWeight(parent, node);
+      mst.add(Edge(parent, node, weight));
+      node = parent;
     }
 
-    return mst;
+    return mst.reversed.toList();
   }
 
-  int _minKey(List<int> key, List<bool> visited) {
-    int min = 999999;
-    int minIndex = -1;
+  String _getMinKey(Map<String, int> keyMap, Set<String> visitedNodes) {
+    int min = 999999999; // Use a large value to represent infinity
+    String minKey = '';
 
-    for (int v = 0; v < nodes.length; v++) {
-      if (!visited[v] && key[v] < min) {
-        min = key[v];
-        minIndex = v;
+    for (final entry in keyMap.entries) {
+      if (!visitedNodes.contains(entry.key) && entry.value < min) {
+        min = entry.value;
+        minKey = entry.key;
       }
     }
 
-    return minIndex;
+    return minKey;
+  }
+
+  int _findEdgeWeight(String source, String destination) {
+    for (final edge in edges) {
+      if (edge.source == source && edge.destination == destination) {
+        return edge.weight;
+      }
+    }
+
+    return 0;
   }
 }
 
@@ -74,38 +84,71 @@ class MSTPage extends StatefulWidget {
 
 class _MSTPageState extends State<MSTPage> {
   final List<String> nodes = ['S', 'A', 'B', 'C', 'D', 'T'];
-  final Graph graph = Graph(['S', 'A', 'B', 'C', 'D', 'T']);
+  final List<Edge> edges = [
+    Edge('S', 'A', 7),
+    Edge('S', 'C', 8),
+    Edge('A', 'C', 3),
+    Edge('A', 'B', 6),
+    Edge('A', 'D', 3),
+    Edge('B', 'T', 5),
+    Edge('C', 'C', 2),
+    Edge('C', 'B', 4),
+    Edge('D', 'T', 2),
+  ];
   List<Edge> mst = [];
+  List<String> path = [];
 
   @override
   void initState() {
     super.initState();
-    // Add edges to the graph
-    graph.addEdge('S', 'A', 7);
-    graph.addEdge('S', 'C', 8);
-    graph.addEdge('A', 'C', 3);
-    graph.addEdge('A', 'B', 6);
-    graph.addEdge('A', 'D', 3);
-    graph.addEdge('B', 'T', 5);
-    graph.addEdge('C', 'C', 2);
-    graph.addEdge('C', 'B', 4);
-    graph.addEdge('D', 'T', 2);
+    // Calculate the Minimum Spanning Tree (MST) using Prim's algorithm
+    final graph = Graph(nodes, edges);
+    mst = graph.primMST('S', 'B');
+    path = _getPath('S', 'B', mst);
+  }
 
-    // Calculate the Minimum Spanning Tree
-    mst = graph.primMST();
+  List<String> _getPath(String startNode, String endNode, List<Edge> mst) {
+    final List<String> path = [startNode];
+    String currentNode = startNode;
+
+    while (currentNode != endNode) {
+      for (final edge in mst) {
+        if (edge.source == currentNode) {
+          path.add(edge.destination);
+          currentNode = edge.destination;
+          break;
+        }
+      }
+    }
+
+    return path;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Minimum Spanning Tree Using Prim'),
+        title: const Text('Minimum Spanning Tree (S to B) in Prim'),
       ),
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(16),
-            child: Text(
+            padding: const EdgeInsets.all(16),
+            child: const Text(
+              'Prim\'s Algorithm:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: const Text(
+              'Prim\'s algorithm is a greedy algorithm that finds the Minimum Spanning Tree (MST) of a connected, weighted graph. It starts with an arbitrary node and repeatedly adds the edge with the minimum weight that connects a node in the MST to a node outside the MST, until all nodes are included in the MST. The algorithm maintains a set of visited nodes and a priority queue (min-heap) of edges. It selects the edge with the minimum weight from the priority queue and adds the destination node to the MST, updating the priority queue accordingly. The process continues until all nodes are visited.',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: const Text(
               'Steps:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -123,22 +166,17 @@ class _MSTPageState extends State<MSTPage> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(16),
-            child: Text(
-              'Final MST:',
+            padding: const EdgeInsets.all(16),
+            child: const Text(
+              'MST Path (S to B):',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: mst.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    '${mst[index].source} - ${mst[index].destination} : ${mst[index].weight}',
-                  ),
-                );
-              },
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              path.join(' -> '),
+              style: const TextStyle(fontSize: 16),
             ),
           ),
         ],
