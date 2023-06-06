@@ -20,7 +20,7 @@ class Graph {
     final Set<String> visitedNodes = {};
 
     for (final node in nodes) {
-      keyMap[node] = 999999; // Replace int.maxFinite with a large value
+      keyMap[node] = 999999;
     }
 
     keyMap[startNode] = 0;
@@ -53,7 +53,7 @@ class Graph {
   }
 
   String _getMinKey(Map<String, int> keyMap, Set<String> visitedNodes) {
-    int min = 999999999; // Use a large value to represent infinity
+    int min = 999999999;
     String minKey = '';
 
     for (final entry in keyMap.entries) {
@@ -101,7 +101,6 @@ class _MSTPageState extends State<MSTPage> {
   @override
   void initState() {
     super.initState();
-    // Calculate the Minimum Spanning Tree (MST) using Prim's algorithm
     final graph = Graph(nodes, edges);
     mst = graph.primMST('S', 'B');
     path = _getPath('S', 'B', mst);
@@ -128,55 +127,61 @@ class _MSTPageState extends State<MSTPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Minimum Spanning Tree (S to B) in Prim'),
+        title: const Text('Minimum Spanning Tree (Prim)'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          Padding(
             padding: const EdgeInsets.all(16),
-            child: const Text(
+            child: Text(
               'Prim\'s Algorithm:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: const Text(
-              'Prim\'s algorithm is a greedy algorithm that finds the Minimum Spanning Tree (MST) of a connected, weighted graph. It starts with an arbitrary node and repeatedly adds the edge with the minimum weight that connects a node in the MST to a node outside the MST, until all nodes are included in the MST. The algorithm maintains a set of visited nodes and a priority queue (min-heap) of edges. It selects the edge with the minimum weight from the priority queue and adds the destination node to the MST, updating the priority queue accordingly. The process continues until all nodes are visited.',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Prim\'s algorithm is a greedy algorithm that finds the Minimum Spanning Tree (MST) of a connected, weighted graph. It starts with an arbitrary node and repeatedly adds the edge with the minimum weight that connects a node in the MST to a node outside the MST, until all nodes are included in the MST. The algorithm maintains a set of visited nodes and a priority queue (min-heap) of edges.',
               style: TextStyle(fontSize: 16),
             ),
           ),
-          Container(
+          Padding(
             padding: const EdgeInsets.all(16),
-            child: const Text(
+            child: Text(
               'Steps:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
             child: ListView.builder(
               itemCount: mst.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    '${mst[index].source} - ${mst[index].destination} : ${mst[index].weight}',
+                return Card(
+                  elevation: 2,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: ListTile(
+                    title: Text(
+                        '${mst[index].source} - ${mst[index].destination}'),
+                    subtitle: Text('Weight: ${mst[index].weight}'),
                   ),
                 );
               },
             ),
           ),
-          Container(
+          Padding(
             padding: const EdgeInsets.all(16),
-            child: const Text(
+            child: Text(
               'MST Path (S to B):',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               path.join(' -> '),
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ],

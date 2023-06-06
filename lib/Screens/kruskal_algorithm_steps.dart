@@ -123,9 +123,14 @@ class KruskalMSTScreen extends StatelessWidget {
               itemCount: mst.length,
               itemBuilder: (context, index) {
                 final edge = mst[index];
-                return ListTile(
-                  title: Text('${edge.source} - ${edge.destination}'),
-                  subtitle: Text('Weight: ${edge.weight}'),
+                return Card(
+                  elevation: 2,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: ListTile(
+                    title: Text('${edge.source} - ${edge.destination}'),
+                    subtitle: Text('Weight: ${edge.weight}'),
+                  ),
                 );
               },
             ),

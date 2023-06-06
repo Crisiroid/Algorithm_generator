@@ -111,7 +111,6 @@ class _SollinMstPageState extends State<SollinMstPage> {
   @override
   void initState() {
     super.initState();
-    // Calculate the Minimum Spanning Tree from S to B
     final graph = Graph(nodes, edges);
     mst = graph.sollinMST('S', 'B');
     path = _getPath('S', 'B', mst);
@@ -141,52 +140,58 @@ class _SollinMstPageState extends State<SollinMstPage> {
         title: const Text('Minimum Spanning Tree (S to B) in Sollin'),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
+          Padding(
             padding: const EdgeInsets.all(16),
-            child: const Text(
+            child: Text(
               'Sollin\'s Algorithm:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: const Text(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
               'Sollin\'s algorithm is a parallel algorithm for finding the Minimum Spanning Tree (MST) of a graph. It is based on the concept of a forest of trees, where each tree represents a connected component of the graph. The algorithm iteratively merges the trees in the forest by adding safe edges, which are the lightest edges connecting two different trees. The process continues until the forest is reduced to a single tree, which represents the MST of the graph.',
               style: TextStyle(fontSize: 16),
             ),
           ),
-          Container(
+          Padding(
             padding: const EdgeInsets.all(16),
-            child: const Text(
+            child: Text(
               'Steps:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
             child: ListView.builder(
               itemCount: mst.length,
               itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Text(
-                    '${mst[index].source} - ${mst[index].destination} : ${mst[index].weight}',
+                return Card(
+                  elevation: 2,
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  child: ListTile(
+                    title: Text(
+                        '${mst[index].source} - ${mst[index].destination}'),
+                    subtitle: Text('Weight: ${mst[index].weight}'),
                   ),
                 );
               },
             ),
           ),
-          Container(
+          Padding(
             padding: const EdgeInsets.all(16),
-            child: const Text(
+            child: Text(
               'MST Path (S to B):',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
+          Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               path.join(' -> '),
-              style: const TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16),
             ),
           ),
         ],
