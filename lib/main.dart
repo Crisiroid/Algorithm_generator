@@ -1,4 +1,8 @@
-import 'package:algorithm_generator/Screens/home_page.dart';
+// ignore_for_file: camel_case_types
+
+import 'package:algorithm_generator/Utils/home_page.dart';
+
+import 'Screens/get_user_input.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(mainApp());
@@ -11,7 +15,7 @@ class mainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: HomePage(),
+      home: GraphPage(),
     );
   }
 }
